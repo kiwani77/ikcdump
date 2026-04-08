@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CSA Exam</title>
+    <style>
+        :root { --sn-main: #293e40; --sn-success: #27ae60; --sn-error: #e74c3c; --sn-bg: #ffffff; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
+        
+        .header { position: fixed; top: 0; width: 100%; height: 60px; background: var(--sn-main); color: white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .timer { font-size: 20px; font-weight: bold; }
+
+        .content { margin-top: 70px; margin-bottom: 80px; padding: 15px; }
+        .q-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; display: none; min-height: 350px; }
+        .q-card.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .q-meta { font-size: 13px; color: #888; margin-bottom: 10px; font-weight: bold; }
+        .question-text { font-size: 18px; line-height: 1.5; color: #333; margin-bottom: 20px; font-weight: 600; }
+
+        .options-list label { display: block; background: #f8f9fa; border: 2px solid #eee; padding: 18px; margin-bottom: 12px; border-radius: 12px; font-size: 16px; position: relative; }
+        .options-list input { position: absolute; opacity: 0; }
+        .options-list label.selected { border-color: var(--sn-main); background: #eef2f3; font-weight: bold; }
+
+        .nav-bar { position: fixed; bottom: 0; width: 100%; height: 70px; background: white; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; border-top: 1px solid #ddd; z-index: 1000; }
+        .btn { padding: 12px 20px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .btn-prev { background: #eee; color: #333; }
+        .btn-next { background: var(--sn-main); color: white; }
+        .btn-submit { background: var(--sn-success); color: white; }
+
+        #result-screen { display: none; padding: 20px; text-align: center; background: #f0f2f5; min-height: 100vh; }
+        .score-circle { width: 120px; height: 120px; border-radius: 50%; border: 8px solid var(--sn-main); display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: bold; margin: 20px auto; background: white; }
+        .pass { color: var(--sn-success); border-color: var(--sn-success); }
+        .fail { color: var(--sn-error); border-color: var(--sn-error); }
+        .report-card { text-align: left; background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
+        .review-section { text-align: left; margin-top: 20px; }
+        .review-item { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 5px solid #ccc; }
+        .review-item.correct { border-left-color: var(--sn-success); }
+        .review-item.wrong { border-left-color: var(--sn-error); }
+        .review-q { font-weight: bold; margin-bottom: 8px; font-size: 15px; }
+        .review-ans { font-size: 14px; margin-top: 5px; }
+        .txt-correct { color: var(--sn-success); font-weight: bold; }
+        .txt-wrong { color: var(--sn-error); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div id="intro" style="padding: 40px 20px; text-align: center;">
+    <h1 style="color: var(--sn-main);">ServiceNow CSA<br>Mobile Exam</h1>
+    <p>60 Questions | 90 Minutes</p>
+    <button class="btn btn-next" style="width: 100%; padding: 20px;" onclick="startExam()">START EXAM</button>
+</div>
+
+<div id="exam-ui" style="display:none;">
+    <div class="header">
+        <span id="q-idx">1 / 60</span>
+        <div class="timer" id="timer">90:00</div>
+    </div>
+    <div class="content" id="q-container"></div>
+    <div class="nav-bar">
+        <button class="btn btn-prev" onclick="move(-1)">PREV</button>
+        <button class="btn btn-next" id="next-btn" onclick="move(1)">NEXT</button>
+        <button class="btn btn-submit" id="submit-btn" style="display:none;" onclick="calculateResult()">SUBMIT</button>
+    </div>
+</div>
+
+<div id="result-screen">
+    <h1 id="res-status">RESULT</h1>
+    <div class="score-circle" id="res-score">0%</div>
+    <div class="report-card" id="res-detail"></div>
+    <div class="review-section">
+        <h3>Question Review</h3>
+        <div id="review-container"></div>
+    </div>
+    <button class="btn btn-next" style="width: 100%; margin: 30px 0;" onclick="resetExam()">RETRY EXAM</button>
+</div>
+
+<script>
+    // 문항 데이터 (일부 생략, 구조 동일)
+    const questions = [
+    // 1. User Interface & Navigation (20% - 12문항)
+    { cat: "UI & Nav", q: "Which of the following is the main area where users interact with records and forms?", a: ["Banner Frame", "Application Navigator", "Content Frame", "History Tab"], ans: 2 },
+    { cat: "UI & Nav", q: "Where can you go to change the instance logo and browser tab title?", a: ["UI Policies", "Basic Configuration UI16", "Banner Designer", "Theme Builder"], ans: 1 },
+    { cat: "UI & Nav", q: "What is the name of the feature that allows you to see the path of a filtered list?", a: ["Breadcrumbs", "Filter Navigation", "Query Line", "Pathfinder"], ans: 0 },
+    { cat: "UI & Nav", q: "Which icon in the banner frame allows you to switch between different user identities (for testing)?", a: ["Gear icon", "Help icon", "Impersonate User (under user menu)", "Notification icon"], ans: 2 },
+    { cat: "UI & Nav", q: "How can you mark an application or module as a 'Favorite'?", a: ["Double-click it", "Click the star icon", "Drag it to the banner", "Right-click it"], ans: 1 },
+    { cat: "UI & Nav", q: "Where does the 'Global Search' bar reside?", a: ["Content Frame", "Banner Frame", "Application Navigator", "Status Bar"], ans: 1 },
+    { cat: "UI & Nav", q: "What does the 'Gear' icon in the banner frame open?", a: ["Application Navigator", "System Settings", "User Profile", "Help Panel"], ans: 1 },
+    { cat: "UI & Nav", q: "Which tool allows you to create a list of records with specific conditions?", a: ["Form Designer", "Condition Builder (Filter)", "Schema Map", "UI Policy"], ans: 1 },
+    { cat: "UI & Nav", q: "In the Next Experience UI, what is the 'All' menu equivalent to?", a: ["History", "Application Navigator", "Favorites", "Global Search"], ans: 1 },
+    { cat: "UI & Nav", q: "Where do you find the 'Recently Viewed' records?", a: ["Favorites tab", "All menu", "History tab", "Search results"], ans: 2 },
+    { cat: "UI & Nav", q: "What happens when you click the logo in the banner frame?", a: ["Log out", "Opens the homepage/dashboard", "Opens the user profile", "Shows help"], ans: 1 },
+    { cat: "UI & Nav", q: "Which frame displays the 'Filter Navigator'?", a: ["Content Frame", "Application Navigator Frame", "Banner Frame", "Bottom Frame"], ans: 1 },
+
+    // 2. Data & CMDB (30% - 18문항)
+    { cat: "Data & CMDB", q: "Which table is the base table for all 'Task' records?", a: ["sys_user", "task", "cmdb_ci", "incident"], ans: 1 },
+    { cat: "Data & CMDB", q: "What is the unique 32-character ID assigned to every record in ServiceNow?", a: ["ID Number", "Record_ID", "sys_id", "Primary_Key"], ans: 2 },
+    { cat: "Data & CMDB", q: "Which tool allows you to see the relationships between tables graphically?", a: ["Schema Map", "Dependency View", "Business Map", "Dictionary View"], ans: 0 },
+    { cat: "Data & CMDB", q: "In an Import Set, which step determines if a record should be updated or created?", a: ["Mapping", "Coalesce", "Filtering", "Transforming"], ans: 1 },
+    { cat: "Data & CMDB", q: "What is the name of the table that stores Configuration Item (CI) records?", a: ["cmdb_ci", "cmdb_rel_ci", "asset_ci", "sys_ci"], ans: 0 },
+    { cat: "Data & CMDB", q: "Which field type allows you to reference a record on another table?", a: ["Choice", "String", "Reference", "Journal"], ans: 2 },
+    { cat: "Data & CMDB", q: "What is a 'CI Class'?", a: ["A user group", "A specific type of Configuration Item (e.g., Server, Database)", "A training course", "A script library"], ans: 1 },
+    { cat: "Data & CMDB", q: "Which table stores the definitions for every field in the system?", a: ["sys_db_object", "sys_dictionary", "sys_metadata", "sys_storage"], ans: 1 },
+    { cat: "Data & CMDB", q: "What does 'Dot-walking' allow you to do?", a: ["Delete records", "Access fields on related tables through a reference field", "Move a field on a form", "Navigate the menu"], ans: 1 },
+    { cat: "Data & CMDB", q: "Which tool helps you manage the structure of the CMDB classes?", a: ["CI Class Manager", "CMDB Builder", "Table Designer", "Schema Map"], ans: 0 },
+    { cat: "Data & CMDB", q: "What is a 'Child Table' in ServiceNow?", a: ["A table that contains no data", "A table that extends another table (Parent)", "A system table", "A temporary table"], ans: 1 },
+    { cat: "Data & CMDB", q: "When importing data, what is the 'Staging Table'?", a: ["The target table", "A temporary table for raw data", "A system log", "The user table"], ans: 1 },
+    { cat: "Data & CMDB", q: "Which relationship type describes how CIs are connected in the CMDB?", a: ["Dependency View", "CI Relationship (cmdb_rel_ci)", "Schema Map", "Dot-walk"], ans: 1 },
+    { cat: "Data & CMDB", q: "Which role is required to manage the CMDB?", a: ["itil", "admin", "cmdb_admin", "asset_admin"], ans: 2 },
+    { cat: "Data & CMDB", q: "Which tool is used to create new tables and fields?", a: ["Form Designer", "Table Builder", "Schema Map", "Workflow Editor"], ans: 1 },
+    { cat: "Data & CMDB", q: "What does a 'Foreign Key' equivalent in ServiceNow refer to?", a: ["sys_id", "Reference Field", "Dictionary", "Primary Key"], ans: 1 },
+    { cat: "Data & CMDB", q: "What is the purpose of the 'Configuration Management Database'?", a: ["Storing user passwords", "Managing IT infrastructure components and their relationships", "Creating reports", "Managing SLAs"], ans: 1 },
+    { cat: "Data & CMDB", q: "Which module allows you to view all database tables?", a: ["Tables & Columns", "Dictionary", "Schema Map", "DB Explorer"], ans: 0 },
+
+    // 3. Service Management (30% - 18문항)
+    { cat: "Service Mgmt", q: "Which table stores individual Knowledge Articles?", a: ["kb_knowledge", "kb_base", "kb_article", "knowledge_content"], ans: 0 },
+    { cat: "Service Mgmt", q: "What is the name of the process that moves a Knowledge Article from Draft to Published?", a: ["Approval Flow", "Knowledge Workflow", "Publishing Process", "Article Cycle"], ans: 1 },
+    { cat: "Service Mgmt", q: "Which Catalog Item type is used to create a record on a task table (like Incident)?", a: ["Order Guide", "Record Producer", "Content Item", "Standard Item"], ans: 1 },
+    { cat: "Service Mgmt", q: "In the Service Catalog, what does 'REQ' represent?", a: ["The individual item ordered", "The overall Request (Basket)", "The fulfillment task", "The approval record"], ans: 1 },
+    { cat: "Service Mgmt", q: "What is 'User Criteria' used for?", a: ["Setting user passwords", "Controlling who can see Knowledge/Catalog items", "Assigning roles", "Creating groups"], ans: 1 },
+    { cat: "Service Mgmt", q: "Which agreement type is between an IT department and an external vendor?", a: ["SLA", "OLA", "UC (Underpinning Contract)", "SOW"], ans: 2 },
+    { cat: "Service Mgmt", q: "Where can users go to find answers and order services independently?", a: ["Service Portal", "Banner Frame", "CMDB", "Schema Map"], ans: 0 },
+    { cat: "Service Mgmt", q: "What is a 'Variable Set' in the Service Catalog?", a: ["A list of all variables", "A reusable group of variables for multiple items", "A script variable", "A database view"], ans: 1 },
+    { cat: "Service Mgmt", q: "Which role is required to create or edit Knowledge Articles?", a: ["itil", "knowledge_admin", "knowledge", "admin"], ans: 2 },
+    { cat: "Service Mgmt", q: "What does an 'Order Guide' do?", a: ["Provides instructions", "Groups multiple items into a single request", "Calculates the price", "Assigns a task"], ans: 1 },
+    { cat: "Service Mgmt", q: "Which table stores Request Items (RITM)?", a: ["sc_request", "sc_req_item", "sc_task", "request_item"], ans: 1 },
+    { cat: "Service Mgmt", q: "What is the purpose of an SLA 'Retroactive Start'?", a: ["Restarting an SLA", "Setting the start time to a past event (e.g., Created Date)", "Pausing the SLA", "Deleting the SLA"], ans: 1 },
+    { cat: "Service Mgmt", q: "What happens when an SLA reaches its 'Breach' time?", a: ["The record is deleted", "The 'Has breached' flag is set to true", "The user is logged out", "The ticket is closed"], ans: 1 },
+    { cat: "Service Mgmt", q: "Which tool is used to manage and view all service requests?", a: ["Service Desk", "Service Portal", "Catalog Manager", "Order History"], ans: 0 },
+    { cat: "Service Mgmt", q: "What is a 'Content Item' in the Service Catalog?", a: ["A physical product", "A link to a portal page or external URL", "A script", "A workflow"], ans: 1 },
+    { cat: "Service Mgmt", q: "Which state indicates a Knowledge Article is no longer visible to users?", a: ["Draft", "Review", "Retired", "Outdated"], ans: 2 },
+    { cat: "Service Mgmt", q: "How are Knowledge Articles typically ranked in search?", a: ["Alphabetically", "By Relevancy and View Count", "By Author", "By ID"], ans: 1 },
+    { cat: "Service Mgmt", q: "What does 'SLA' stand for?", a: ["System Level Access", "Service Level Agreement", "Standard Logic App", "Service Log Audit"], ans: 1 },
+
+    // 4. Automation & Tooling (20% - 12문항)
+    { cat: "Automation", q: "Which tool is a low-code alternative to Workflow for process automation?", a: ["Script Editor", "Flow Designer", "UI Policy", "Business Rule"], ans: 1 },
+    { cat: "Automation", q: "What is a 'UI Policy' primarily used for?", a: ["Server-side validation", "Controlling field visibility and mandatory status on a form", "Sending emails", "Importing data"], ans: 1 },
+    { cat: "Automation", q: "Which script runs in the browser when a field value changes?", a: ["Business Rule", "onChange Client Script", "onSubmit Client Script", "onLoad Client Script"], ans: 1 },
+    { cat: "Automation", q: "Where do you define the conditions for an email to be sent?", a: ["Notification Record > When to send", "Business Rule", "Event Log", "UI Action"], ans: 0 },
+    { cat: "Automation", q: "What is the purpose of a 'Business Rule'?", a: ["To style the UI", "To run server-side logic when a record is displayed, inserted, or updated", "To create a report", "To manage groups"], ans: 1 },
+    { cat: "Automation", q: "Which tool is used to capture configuration changes to move between instances?", a: ["Import Set", "Update Set", "Export Set", "Clone Set"], ans: 1 },
+    { cat: "Automation", q: "Which role is required to elevate to 'security_admin'?", a: ["admin", "itil", "user_admin", "security_manager"], ans: 0 },
+    { cat: "Automation", q: "What is a 'Data Pill' in Flow Designer?", a: ["A script variable", "A visual representation of data from a previous step", "A database record", "A UI button"], ans: 1 },
+    { cat: "Automation", q: "Which of the following is NOT captured in an Update Set?", a: ["Business Rules", "Client Scripts", "User Records (Data)", "Table Definitions"], ans: 2 },
+    { cat: "Automation", q: "What is a 'UI Action'?", a: ["A notification", "A button, link, or context menu item", "A form field", "A database view"], ans: 1 },
+    { cat: "Automation", q: "When does an 'onLoad' Client Script run?", a: ["When the record is saved", "When the form is first displayed", "When a field changes", "When the user logs out"], ans: 1 },
+    { cat: "Automation", q: "What is the first state of a new Update Set?", a: ["Complete", "In Progress", "Closed", "Pending"], ans: 1 }
+];
+
+    let currentQ = 0;
+    let timer;
+    let timeLeft = 90 * 60;
+    let userAnswers = new Array(questions.length).fill(null);
+    let isExamStarted = false;
+
+    // 페이지 로드 시 복구 실행
+    window.onload = function() {
+        loadState();
+    };
+
+    function saveState() {
+        const state = {
+            currentQ: currentQ,
+            timeLeft: timeLeft,
+            userAnswers: userAnswers,
+            isExamStarted: isExamStarted
+        };
+        sessionStorage.setItem('csa_exam_state', JSON.stringify(state));
+    }
+
+    function loadState() {
+        const saved = sessionStorage.getItem('csa_exam_state');
+        if (saved) {
+            const state = JSON.parse(saved);
+            currentQ = state.currentQ;
+            timeLeft = state.timeLeft;
+            userAnswers = state.userAnswers;
+            isExamStarted = state.isExamStarted;
+
+            if (isExamStarted) {
+                document.getElementById('intro').style.display = 'none';
+                document.getElementById('exam-ui').style.display = 'block';
+                renderQuestions();
+                showQuestion(currentQ);
+                startTimer();
+                // 저장된 답변에 체크 표시 복구
+                userAnswers.forEach((ans, idx) => {
+                    if (ans !== null) {
+                        const label = document.getElementById(`label-${idx}-${ans}`);
+                        if (label) label.classList.add('selected');
+                    }
+                });
+            }
+        }
+    }
+
+    function startExam() {
+        isExamStarted = true;
+        document.getElementById('intro').style.display = 'none';
+        document.getElementById('exam-ui').style.display = 'block';
+        renderQuestions();
+        showQuestion(0);
+        startTimer();
+        saveState();
+    }
+
+    function renderQuestions() {
+        const container = document.getElementById('q-container');
+        container.innerHTML = "";
+        questions.forEach((q, i) => {
+            const div = document.createElement('div');
+            div.className = 'q-card';
+            div.id = `q-${i}`;
+            div.innerHTML = `
+                <div class="q-meta">${q.cat}</div>
+                <div class="question-text">Q${i+1}. ${q.q}</div>
+                <div class="options-list">
+                    ${q.a.map((opt, oi) => `
+                        <label id="label-${i}-${oi}">
+                            <input type="radio" name="opt-${i}" value="${oi}" onchange="selectOpt(${i}, ${oi})" ${userAnswers[i] == oi ? 'checked' : ''}>
+                            <span>${opt}</span>
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function selectOpt(qi, oi) {
+        userAnswers[qi] = oi;
+        const labels = document.querySelectorAll(`#q-${qi} label`);
+        labels.forEach(l => l.classList.remove('selected'));
+        document.getElementById(`label-${qi}-${oi}`).classList.add('selected');
+        saveState();
+        setTimeout(() => move(1), 300);
+    }
+
+    function showQuestion(idx) {
+        if(idx < 0 || idx >= questions.length) return;
+        document.querySelectorAll('.q-card').forEach(c => c.classList.remove('active'));
+        document.getElementById(`q-${idx}`).classList.add('active');
+        document.getElementById('q-idx').innerText = `${idx + 1} / ${questions.length}`;
+        currentQ = idx;
+        
+        document.getElementById('next-btn').style.display = (idx === questions.length - 1) ? 'none' : 'block';
+        document.getElementById('submit-btn').style.display = (idx === questions.length - 1) ? 'block' : 'none';
+        saveState();
+    }
+
+    function move(dir) {
+        showQuestion(currentQ + dir);
+    }
+
+    function startTimer() {
+        if(timer) clearInterval(timer);
+        timer = setInterval(() => {
+            timeLeft--;
+            let m = Math.floor(timeLeft/60);
+            let s = timeLeft%60;
+            document.getElementById('timer').innerText = `${m}:${s<10?'0'+s:s}`;
+            saveState(); // 매 초마다 시간을 저장
+            if(timeLeft <= 0) calculateResult();
+        }, 1000);
+    }
+
+    function calculateResult() {
+        clearInterval(timer);
+        isExamStarted = false;
+        sessionStorage.removeItem('csa_exam_state'); // 시험 종료 시 상태 삭제
+
+        let correctCount = 0;
+        let catScores = {};
+        let catTotals = {};
+        const reviewContainer = document.getElementById('review-container');
+        reviewContainer.innerHTML = "";
+
+        questions.forEach((q, i) => {
+            catTotals[q.cat] = (catTotals[q.cat] || 0) + 1;
+            const isCorrect = userAnswers[i] === q.ans;
+            if(isCorrect) {
+                correctCount++;
+                catScores[q.cat] = (catScores[q.cat] || 0) + 1;
+            }
+
+            const reviewItem = document.createElement('div');
+            reviewItem.className = `review-item ${isCorrect ? 'correct' : 'wrong'}`;
+            const userPick = userAnswers[i] !== null ? q.a[userAnswers[i]] : "No Answer";
+            const correctAns = q.a[q.ans];
+
+            reviewItem.innerHTML = `
+                <div class="review-q">Q${i+1}. ${q.q}</div>
+                <div class="review-ans">
+                    Your Answer: <span class="${isCorrect ? 'txt-correct' : 'txt-wrong'}">${userPick}</span><br>
+                    Correct Answer: <span class="txt-correct">${correctAns}</span>
+                </div>
+            `;
+            reviewContainer.appendChild(reviewItem);
+        });
+
+        const score = Math.round((correctCount / questions.length) * 100);
+        let isPass = score >= 70;
+        let report = "";
+        for(let c in catTotals) {
+            let cs = catScores[c] || 0;
+            let p = Math.round((cs / catTotals[c]) * 100);
+            report += `<p>${c}: ${p}% (${cs}/${catTotals[c]})</p>`;
+        }
+
+        document.getElementById('exam-ui').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+        window.scrollTo(0, 0);
+
+        const circle = document.getElementById('res-score');
+        circle.innerText = score + "%";
+        circle.className = `score-circle ${isPass ? 'pass' : 'fail'}`;
+        document.getElementById('res-status').innerText = isPass ? "PASSED" : "FAILED";
+        document.getElementById('res-detail').innerHTML = report;
+    }
+
+    function resetExam() {
+        sessionStorage.removeItem('csa_exam_state');
+        location.reload();
+    }
+</script>
+</body>
+</html>
