@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CMDB/CSDM 합격 치트시트</title>
+    <style>
+      :root {
+          --primary: #293e40;
+          --secondary: #3d5a5c;
+          --accent: #ffcc00;
+          --bg: #f4f7f6;
+          --text: #333;
+          --white: #ffffff;
+          --point: #e74c3c;
+      }
+      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: var(--text); background: var(--bg); margin: 0; padding: 0; }
+      .container { padding: 15px; max-width: 600px; margin: auto; }
+      header { background: var(--primary); color: var(--white); padding: 20px 15px; text-align: center; border-radius: 0 0 20px 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+      h1 { margin: 0; font-size: 1.4rem; }
+      .section { background: var(--white); border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+      h2 { border-left: 5px solid var(--primary); padding-left: 10px; font-size: 1.1rem; color: var(--primary); margin-top: 0; }
+      .tip-box { background: #fff9db; border: 1px solid #fab005; padding: 10px; border-radius: 8px; margin: 10px 0; font-weight: bold; }
+      .formula { background: #e7f5ff; border-left: 5px solid #228be6; padding: 10px; margin: 10px 0; font-family: monospace; }
+      .keyword { color: var(--point); font-weight: bold; }
+      table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.85rem; }
+      th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+      th { background: #f8f9fa; }
+      .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; background: #eee; margin-right: 5px; }
+      .highlight { background-color: yellow; }
+      .crawl { border-left: 5px solid #94a3b8; }
+      .walk { border-left: 5px solid #10b981; }
+      .run { border-left: 5px solid #3b82f6; }
+      .fly { border-left: 5px solid #8b5cf6; }
+      footer { text-align: center; padding: 20px; color: #888; font-size: 0.8rem; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>🚀 CMDB & CSDM Final Check</h1>
+      <p>내일 시험, 이 페이지 하나로 끝내세요!</p>
+    </header>
+
+    <div class="container">
+      <div class="section">
+        <h2>🔥 1초 컷 매칭 공식 (필수 암기)</h2>
+        <div class="formula">
+          • <b>Incident</b> ➔ Support group (기술 지원)<br />
+          • <b>Change</b> ➔ Change group (작업 수행)<br />
+          • <b>Existence/Present?</b> ➔ <span class="keyword">Attestation</span><br />
+          • <b>Attributes Correct?</b> ➔ <span class="keyword">Data Certification</span><br />
+          • <b>New CI Class?</b> ➔ Store App(Class Models) 먼저 확인
+        </div>
+        <div class="tip-box">
+          💡 "Auto-populate" 단어가 보이면 위 매칭 공식을 떠올리세요! 데이터 기반 자동화(Data Driven Automation)가
+          목적입니다.
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>📊 대시보드 3대장 완벽 비교</h2>
+        <table>
+          <tr>
+            <th>대시보드명</th>
+            <th>핵심 키워드</th>
+          </tr>
+          <tr>
+            <td><b>Health Dashboard</b></td>
+            <td>3C (<span class="keyword">Completeness, Compliance, Correctness</span>)</td>
+          </tr>
+          <tr>
+            <td><b>Data Foundations</b></td>
+            <td><span class="keyword">Playbook</span>, Best Practice, IRE 사용률, 90일 업데이트</td>
+          </tr>
+          <tr>
+            <td><b>CSDM Data Found.</b></td>
+            <td><span class="keyword">CSDM Alignment</span>, 도메인 간 연결 상태</td>
+          </tr>
+        </table>
+        <p>※ <b>Health Inclusion Rules</b>: 대시보드에서 특정 클래스를 제외하거나 범위를 좁힐 때 사용 (분모 조절)</p>
+      </div>
+
+      <div class="section">
+        <h2>👥 도메인별 담당자 & 키워드</h2>
+        <ul>
+          <li>
+            <b>Design</b>: <span class="keyword">Business Application</span>, Information Object (담당: Enterprise
+            Architect)
+          </li>
+          <li>
+            <b>Manage Tech Services</b>: Technical Service, <span class="keyword">Application Service</span>, Infra CI
+            (담당: App Owner)
+          </li>
+          <li>
+            <b>Sell/Consume</b>: <span class="keyword">Business Service</span>, Service Offering (담당: Portfolio
+            Manager, Consumer)
+          </li>
+        </ul>
+        <div class="tip-box">💡 PII, PCI, GDPR, Privacy 나오면 무조건 <b>Information Object</b> (Design 도메인)!</div>
+      </div>
+
+      <div class="section">
+        <h2>🛠️ 주요 관리 도구 핵심 요약</h2>
+        <ul>
+          <li>
+            <b>CMDB Data Manager</b>: <span class="keyword">Policy-driven</span>. Retired/End of Life CI 삭제 및
+            아카이브 처리 (빗자루 역할).
+          </li>
+          <li>
+            <b>CI Class Manager</b>: <span class="keyword">IRE 규칙</span>(Identification & Reconciliation) 설정 장소.
+          </li>
+          <li>
+            <b>CMDB Workspace</b>: 관리자의 통합 작업 공간. <span class="keyword">Duplicate CI Remediator</span> 실행 및
+            My Work 확인.
+          </li>
+          <li>
+            <b>Query Builder</b>: CI 관계 및 <span class="keyword">Non-CMDB Table</span>(Incident 등)과의 결합 조회.
+          </li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2>🔗 관계 및 IRE 골든 룰</h2>
+        <ul>
+          <li><b>Many-to-Many</b>: 로드 밸런싱(Load balancing), 이중화(Redundancy) 키워드.</li>
+          <li>
+            <b>IRE 우선순위</b>: <span class="keyword">Smallest number = Highest priority</span> (숫자 작을수록 왕).
+          </li>
+          <li>
+            <b>Identification Rule 주의</b>: 변하는 값(IP, Version)을 규칙에 넣으면
+            <span class="highlight">중복 CI 생성의 원인</span>이 됨.
+          </li>
+          <li><b>CMDBTransformUtil</b>: Import Set에서 IRE를 사용하기 위한 API.</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2>🌙 CSDM 성숙도 (Crawl-Walk-Run-Fly)</h2>
+        <p><i>잠들기 전 머릿속으로 지도를 그리세요.</i></p>
+
+        <div class="crawl" style="padding: 10px; margin-bottom: 10px; background: #f8fafc;">
+          <strong>1. Crawl (기어가기): 가시성 확보</strong>
+          <br /><small>인프라 CI 등록 ➔ App Service 생성 ➔ 기술적 영향도 파악</small>
+        </div>
+
+        <div class="walk" style="padding: 10px; margin-bottom: 10px; background: #ecfdf5;">
+          <strong>2. Walk (걷기): 운영 체계화</strong>
+          <br /><small>Technical Service & Offering 정의 ➔ <b>Support Group</b> 자동 할당</small>
+        </div>
+
+        <div class="run" style="padding: 10px; margin-bottom: 10px; background: #eff6ff;">
+          <strong>3. Run (뛰기): 비즈니스 가치</strong>
+          <br /><small>Business Service ➔ <b>SLA & Criticality</b> 관리 ➔ 우선순위 대응</small>
+        </div>
+
+        <div class="fly" style="padding: 10px; background: #f5f3ff;">
+          <strong>4. Fly (날기): 최적화 및 거버넌스</strong>
+          <br /><small>Information Object 매핑 ➔ <b>Business Capability</b> 연결 ➔ IT 전략 최적화</small>
+        </div>
+      </div>
+
+      <div class="section" style="background: var(--primary); color: white;">
+        <h2 style="color: var(--accent); border-color: var(--accent);">⭐ 마지막 합격 꿀팁</h2>
+        <ul style="margin-bottom: 0;">
+          <li>"어디서 하는가?" 질문에 모르면 <b>CMDB Workspace</b>나 <b>CI Class Manager</b> 찍기!</li>
+          <li><b>Asset</b>과 관련된 재무/비용 키워드는 CMDB 문제에서 오답일 확률 높음!</li>
+          <li><b>Last Created</b>는 매력적인 오답, <b>Most Reported/Last Updated</b>가 실제 Dynamic Rule!</li>
+          <li><b>Dynamic CI Group</b>은 결국 CI 필드(Configuration Item)에 들어간다!</li>
+        </ul>
+      </div>
+    </div>
+
+    <footer>
+      <p>© 2026 CMDB Exam Prep - 당신의 합격을 기원합니다!</p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMDB/CSDM 시험 직전 최종 암기 노트</title>
+    <style>
+        body { font-family: 'Pretendard', sans-serif; line-height: 1.6; color: #333; background-color: #f4f7f9; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { font-size: 1.4rem; color: #0047bb; text-align: center; border-bottom: 2px solid #0047bb; padding-bottom: 10px; }
+        h2 { font-size: 1.1rem; background: #eef2ff; color: #3730a3; padding: 10px; border-radius: 8px; margin-top: 25px; border-left: 5px solid #3730a3; }
+        .formula { background: #fff4e5; border: 1px dashed #ff922b; padding: 10px; border-radius: 8px; font-weight: bold; margin: 10px 0; }
+        .keyword { color: #d9480f; font-weight: bold; }
+        .important { color: #c92a2a; text-decoration: underline; }
+        .table-box { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
+        .table-box th, .table-box td { border: 1px solid #dee2e6; padding: 8px; text-align: left; }
+        .table-box th { background-color: #f8f9fa; }
+        .tip { font-size: 0.85rem; color: #666; font-style: italic; margin-top: 5px; }
+        .footer { text-align: center; margin-top: 30px; font-weight: bold; color: #0047bb; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🔥 CMDB Exam Final Check</h1>
+
+    <h2>1. 헷갈리는 대시보드 3대장</h2>
+    <div class="formula">
+        📍 3C (Correctness, Compliance, Completeness) → <b>Health Dashboard</b><br>
+        📍 Playbook, Best Practice, IRE 사용률 → <b>Data Foundations Dashboard</b><br>
+        📍 CSDM 도메인 간 연결 상태 → <b>CSDM Data Foundations Dashboard</b>
+    </div>
+    <p class="tip">* "Actionable", "Playbook" 단어 보이면 무조건 Data Foundations!</p>
+
+    <h2>2. CSDM 도메인 & 매칭 공식</h2>
+    <table class="table-box">
+        <tr><th>도메인</th><th>핵심 CI / 키워드</th></tr>
+        <tr><td><b>Design</b></td><td>Business App, <span class="keyword">Information Object</span> (PII/PCI)</td></tr>
+        <tr><td><b>Manage Technical</b></td><td>App Service, Technical Service, Infra CI</td></tr>
+        <tr><td><b>Sell/Consume</b></td><td>Business Service, <span class="keyword">Service Offering</span>, Consumer</td></tr>
+        <tr><td><b>Foundation</b></td><td>Location, User, Group, <span class="keyword">Managed by group</span></td></tr>
+    </table>
+    <p class="tip">* "EA(Architect)가 일하는 곳?" → Design</p>
+
+    <h2>3. 묻지도 따지지도 않는 매칭 (1초 컷)</h2>
+    <ul>
+        <li><span class="keyword">Attestation</span> = 존재 여부 (Still exists?)</li>
+        <li><span class="keyword">Data Certification</span> = 필드 값 검증/수정 (Accuracy)</li>
+        <li><span class="keyword">Information Object</span> = 민감 데이터 (PII, PCI, Privacy)</li>
+        <li><span class="keyword">CMDB Group</span> = Dashboard Filter, 특정 Subset</li>
+        <li><span class="keyword">Life cycle mappings</span> = Legacy Status → CSDM 표준 변환</li>
+    </ul>
+
+    <h2>4. 데이터 관리 & Cleanup</h2>
+    <div class="formula">
+        📍 삭제/보관 정책 기반 자동화 → <b>CMDB Data Manager</b><br>
+        📍 중복 CI 해결 (Remediation) → <b>Duplicate CI Remediator</b> (in Workspace)
+    </div>
+    <ul>
+        <li><b>Archive:</b> 보관 (복구 가능)</li>
+        <li><b>Delete:</b> 영구 삭제 (공간 확보)</li>
+        <li><b>Target:</b> <span class="important">Retired</span> 또는 End of Life 상태의 CI</li>
+    </ul>
+
+    <h2>5. 신규 CI 클래스 생성 Rule</h2>
+    <p>1️⃣ <b>Store App (Class Models)</b>에서 먼저 찾기 (중복 방지)<br>
+       2️⃣ 없으면 기존 CI Class를 <b>Extend(상속)</b> 하기<br>
+       <span class="important">⚠️ Asset 클래스를 확장한다는 보기는 오답!</span></p>
+
+    <h2>6. IRE (식별 & 조정 엔진)</h2>
+    <ul>
+        <li><b>어디서 설정?</b> <span class="keyword">CI Class Manager</span></li>
+        <li><b>우선순위(Reconciliation):</b> 숫자가 <span class="important">작을수록</span> 높은 우선순위!</li>
+        <li><b>외부 데이터 Import 시:</b> <span class="keyword">CMDBTransformUtil</span> API 사용 (IRE 강제)</li>
+    </ul>
+
+    <h2>7. 관계(Relationship) 유형</h2>
+    <ul>
+        <li><b>Many-to-Many:</b> Load Balancing, Redundancy (이중화)</li>
+        <li><b>One-to-Many:</b> 하나의 서버에 여러 앱 (단순 호스팅)</li>
+        <li><b>조회 도구:</b> <span class="keyword">Query Builder</span> (Non-CMDB 테이블인 Incident 등도 연결 가능)</li>
+    </ul>
+
+    <h2>8. 보안 & 영향도 분석</h2>
+    <div class="formula">
+        📍 장애 시 영향 받는 사용자 파악 → <b>Service Offering</b><br>
+        📍 장애 대응 우선순위 → <b>Business Criticality</b>
+    </div>
+
+    <div class="footer">
+        지문에 답이 있습니다. 키워드만 낚아채세요!<br>
+        합격을 진심으로 응원합니다! 🍀
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ServiceNow CIS-Data Foundations - Bonus 15 Questions</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        padding: 20px;
+        background-color: #f4f7f6;
+        color: #333;
+        line-height: 1.6;
+      }
+      h1 {
+        text-align: center;
+        color: #2c3e50;
+      }
+      .quiz-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .question {
+        margin-bottom: 25px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 20px;
+      }
+      .question h3 {
+        font-size: 1.1em;
+        color: #34495e;
+      }
+      .options {
+        list-style-type: none;
+        padding: 0;
+      }
+      .options li {
+        margin: 10px 0;
+      }
+      label {
+        cursor: pointer;
+        display: block;
+        padding: 10px;
+        background: #f9f9f9;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        transition: 0.3s;
+      }
+      label:hover {
+        background: #e8f4f8;
+      }
+      input[type="radio"],
+      input[type="checkbox"] {
+        margin-right: 10px;
+      }
+      button {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        font-size: 1.1em;
+        background-color: #27ae60;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+        margin-top: 20px;
+      }
+      button:hover {
+        background-color: #219150;
+      }
+      .result-msg {
+        margin-top: 10px;
+        font-weight: bold;
+        display: none;
+      }
+      .correct {
+        color: #27ae60;
+      }
+      .incorrect {
+        color: #e74c3c;
+      }
+      .answer-key {
+        font-size: 0.9em;
+        color: #34495e;
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #eaf2f8;
+        border-left: 4px solid #3498db;
+        display: none;
+      }
+      #score-display {
+        text-align: center;
+        font-size: 1.5em;
+        font-weight: bold;
+        margin-top: 20px;
+        display: none;
+        color: #2c3e50;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="quiz-container">
+      <h1>ServiceNow CIS-Data Foundations 추가 15문제 (CSDM 중심)</h1>
+      <form id="quiz-form">
+        <!-- Question 1 -->
+        <div class="question" data-answer="D">
+          <h3>
+            1. Which CSDM domain are business applications, information objects,
+            and capabilities part of?
+          </h3>
+          <ul class="options">
+            <li>
+              <label
+                ><input type="radio" name="q1" value="A" /> A. Service
+                Consumption</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q1" value="B" /> B. Build &
+                Integration</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q1" value="C" /> C. Service
+                Delivery</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q1" value="D" /> D. Design &
+                Planning</label
+              >
+            </li>
+          </ul>
+          <div class="result-msg"></div>
+          <div class="answer-key">정답: D (Design & Planning)</div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="question" data-answer="A,E">
+          <h3>
+            2. From which of the following can the Managed by group be
+            configured and synchronized to the underlying group or class of
+            Configuration items (CIs)? [Choose 2 answers]
+          </h3>
+          <ul class="options">
+            <li>
+              <label
+                ><input type="checkbox" name="q2" value="A" /> A. CI Class
+                Manager</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" name="q2" value="B" /> B. Technology
+                Management Services</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" name="q2" value="C" /> C. Business
+                Service Offerings</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" name="q2" value="D" /> D. Business
+                Services</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" name="q2" value="E" /> E. Technology
+                Management Offerings</label
+              >
+            </li>
+          </ul>
+          <div class="result-msg"></div>
+          <div class="answer-key">정답: A, E</div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="question" data-answer="B">
+          <h3>3. Which CSDM domain is an enterprise architect involved in?</h3>
+          <ul class="options">
+            <li>
+              <label
+                ><input type="radio" name="q3" value="A" /> A. Ideation &
+                Strategy</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q3" value="B" /> B. Design &
+                Planning</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q3" value="C" /> C. Service
+                Delivery</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q3" value="D" /> D. Service
+                Consumption</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q3" value="E" /> E. Build &
+                Integration</label
+              >
+            </li>
+          </ul>
+          <div class="result-msg"></div>
+          <div class="answer-key">정답: B (Design & Planning)</div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="question" data-answer="B,D">
+          <h3>
+            4. In ServiceNow, which of the following are potential consequences
+            of not aligning with the Common Service Data Model (CSDM)? [Choose 2
+            answers]
+          </h3>
+          <ul class="options">
+            <li>
+              <label
+                ><input type="checkbox" name="q4" value="A" /> A. Inability to
+                install ServiceNow store applications</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" name="q4" value="B" /> B. Increased
+                technical debt</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" name="q4" value="C" /> C. Potential loss
+                of data</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" name="q4" value="D" /> D.
+                Incompatibility with future ServiceNow products</label
+              >
+            </li>
+          </ul>
+          <div class="result-msg"></div>
+          <div class="answer-key">정답: B, D</div>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="question" data-answer="D">
+          <h3>
+            5. Which CSDM domain represents deployed service instances and their
+            related, discoverable, components?
+          </h3>
+          <ul class="options">
+            <li>
+              <label
+                ><input type="radio" name="q5" value="A" /> A. Service
+                Consumption</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q5" value="B" /> B. Design &
+                Planning</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q5" value="C" /> C. Ideation &
+                Strategy</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q5" value="D" /> D. Service Delivery
+                (Manage Technical Services)</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q5" value="E" /> E. Build &
+                Integration</label
+              >
+            </li>
+          </ul>
+          <div class="result-msg"></div>
+          <div class="answer-key">
+            정답: D (Service Delivery / Manage Technical Services)
+          </div>
+        </div>
+
+        <!-- Question 6 -->
+        <div class="question" data-answer="B">
+          <h3>6. Which CSDM domain is Customer Service Management part of?</h3>
+          <ul class="options">
+            <li>
+              <label
+                ><input type="radio" name="q6" value="A" /> A. Service
+                Delivery</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q6" value="B" /> B. Service
+                Consumption</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q6" value="C" /> C. Build &
+                Integration</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q6" value="D" /> D. Ideation &
+                Strategy</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q6" value="E" /> E. Design &
+                Planning</label
+              >
+            </li>
+          </ul>
+          <div class="result-msg"></div>
+          <div class="answer-key">정답: B (Service Consumption)</div>
+        </div>
+
+        <!-- Question 7 -->
+        <div class="question" data-answer="B">
+          <h3>
+            7. Which is a service instance type that is a logical representation
+            of a deployed application stack and its dependencies?
+          </h3>
+          <ul class="options">
+            <li>
+              <label
+                ><input type="radio" name="q7" value="A" /> A. Business
+                Application [cmdb_ci_business_app]</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q7" value="B" /> B. Application
+                Service [cmdb_ci_service_auto]</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q7" value="C" /> C. Application
+                [cmdb_ci_appl]</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q7" value="D" /> D. Technology
+                Management Service [cmdb_ci_service_technical]</label
+              >
+            </li>
+          </ul>
+          <div class="result-msg"></div>
+          <div class="answer-key">정답: B (Application Service)</div>
+        </div>
+
+        <!-- Question 8 -->
+        <div class="question" data-answer="B">
+          <h3>
+            8. Which of the following provides a unified workspace that allows
+            owners to holistically view and collectively manage their
+            portfolios, services, offerings, and products through the full
+            lifecycle?
+          </h3>
+          <ul class="options">
+            <li>
+              <label
+                ><input type="radio" name="q8" value="A" /> A. Service
+                Builder</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q8" value="B" /> B. Digital Portfolio
+                Management</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q8" value="C" /> C. CMDB
+                Workspace</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q8" value="D" /> D. CI Class
+                Manager</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q8" value="E" /> E. Service
+                Operations Workspace</label
+              >
+            </li>
+          </ul>
+          <div class="result-msg"></div>
+          <div class="answer-key">정답: B (Digital Portfolio Management)</div>
+        </div>
+
+        <!-- Question 9 -->
+        <div class="question" data-answer="E">
+          <h3>
+            9. Business Services, Technology Management Services, Business
+            Service Offerings, and Technology Management Offerings can be
+            created using forms and lists or in a more streamlined manner using
+            which of the following?
+          </h3>
+          <ul class="options">
+            <li>
+              <label
+                ><input type="radio" name="q9" value="A" /> A. CMDB
+                Workspace</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q9" value="B" /> B. Service
+                Mapping</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q9" value="C" /> C. Application
+                Service Wizard</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q9" value="D" /> D. CI Class
+                Manager</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q9" value="E" /> E. Service
+                Builder</label
+              >
+            </li>
+          </ul>
+          <div class="result-msg"></div>
+          <div class="answer-key">정답: E (Service Builder)</div>
+        </div>
+
+        <!-- Question 10 -->
+        <div class="question" data-answer="A">
+          <h3>
+            10. Which feature can be used to relate an application
+            service/service instance with a technology management offering,
+            business service offering, and/or a business application?
+          </h3>
+          <ul class="options">
+            <li>
+              <label
+                ><input type="radio" name="q10" value="A" /> A. Application
+                Service Wizard</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q10" value="B" /> B. Service
+                Builder</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q10" value="C" /> C. CMDB
+                Workspace</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q10" value="D" /> D. IntegrationHub
+                ETL</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q10" value="E" /> E. CI Class
+                Manager</label
+              >
+            </li>
+          </ul>
+          <div class="result-msg"></div>
+          <div class="answer-key">정답: A (Application Service Wizard)</div>
+        </div>
+
+        <!-- Question 11 -->
+        <div class="question" data-answer="C,D">
+          <h3>
+            11. Aligning to the Common Service Data Model (CSDM) allows for auto
+            population of the assignment group field on new incident and change
+            request records. Which of the following are true when creating a new
+            Incident or Change Request in ServiceNow? [Choose 2 answers]
+          </h3>
+          <ul class="options">
+            <li>
+              <label
+                ><input type="checkbox" name="q11" value="A" /> A. Managed by
+                group on the selected CI auto-populates the assignment group
+                field on the incident form.</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" name="q11" value="B" /> B. Approval
+                group on the selected CI auto-populates the assignment group
+                field on the change request form.</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" name="q11" value="C" /> C. Change group
+                on the selected CI auto-populates the assignment group field on
+                the change request form.</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" name="q11" value="D" /> D. Support group
+                on the selected CI auto-populates the assignment group field on
+                the incident form.</label
+              >
+            </li>
+          </ul>
+          <div class="result-msg"></div>
+          <div class="answer-key">정답: C, D</div>
+        </div>
+
+        <!-- Question 12 -->
+        <div class="question" data-answer="A,B">
+          <h3>
+            12. Which of the following are operational Configuration Items (CIs)
+            that can be selected and populated in the Configuration item field
+            on an Incident or Change Request record? [Choose 2 answers]
+          </h3>
+          <ul class="options">
+            <li>
+              <label
+                ><input type="checkbox" name="q12" value="A" /> A. Dynamic CI
+                Group</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" name="q12" value="B" /> B. Application
+                Service</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" name="q12" value="C" /> C. Installed
+                Software</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" name="q12" value="D" /> D. Business
+                Application</label
+              >
+            </li>
+          </ul>
+          <div class="result-msg"></div>
+          <div class="answer-key">
+            정답: A, B (※ Business Application은 비작동(Design) CI이므로 제외)
+          </div>
+        </div>
+
+        <!-- Question 13 -->
+        <div class="question" data-answer="B,C,D">
+          <h3>
+            13. What are the 3 pillars to focus on to achieve a successful data
+            foundation? [Choose 3 answers]
+          </h3>
+          <ul class="options">
+            <li>
+              <label
+                ><input type="checkbox" name="q13" value="A" /> A.
+                Correctness</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" name="q13" value="B" /> B.
+                Insight</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" name="q13" value="C" /> C. Ingest</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" name="q13" value="D" /> D. Govern</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" name="q13" value="E" /> E.
+                Compliance</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" name="q13" value="F" /> F.
+                Completeness</label
+              >
+            </li>
+          </ul>
+          <div class="result-msg"></div>
+          <div class="answer-key">정답: B, C, D (Ingest, Govern, Insight)</div>
+        </div>
+
+        <!-- Question 14 -->
+        <div class="question" data-answer="E">
+          <h3>
+            14. Which ServiceNow feature is a built-in visualization and
+            reporting tool that helps organizations assess and improve their
+            implementation of the Common Service Data Model (CSDM) based on
+            ServiceNow suggested good practices?
+          </h3>
+          <ul class="options">
+            <li>
+              <label
+                ><input type="radio" name="q14" value="A" /> A. Application
+                Service Wizard</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q14" value="B" /> B. CI Class
+                Manager</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q14" value="C" /> C. CMDB Health
+                Dashboard</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q14" value="D" /> D. Service
+                Builder</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q14" value="E" /> E. CSDM Data
+                Foundations Dashboard</label
+              >
+            </li>
+          </ul>
+          <div class="result-msg"></div>
+          <div class="answer-key">
+            정답: E (CSDM Data Foundations Dashboard)
+          </div>
+        </div>
+
+        <!-- Question 15 -->
+        <div class="question" data-answer="A">
+          <h3>
+            15. Which field(s) does CSDM recommend to use to manage the life
+            cycle of a Configuration item (CI)?
+          </h3>
+          <ul class="options">
+            <li>
+              <label
+                ><input type="radio" name="q15" value="A" /> A. Life cycle stage
+                and stage status</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q15" value="B" /> B. Hardware
+                status</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q15" value="C" /> C. Install
+                status</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="radio" name="q15" value="D" /> D. Operational
+                status</label
+              >
+            </li>
+          </ul>
+          <div class="result-msg"></div>
+          <div class="answer-key">정답: A</div>
+        </div>
+
+        <button type="button" onclick="gradeQuiz()">제출 및 채점하기</button>
+        <div id="score-display"></div>
+      </form>
+    </div>
+
+    <script>
+      function gradeQuiz() {
+        let score = 0;
+        const questions = document.querySelectorAll(".question");
+
+        questions.forEach((q) => {
+          const correctAnswers = q
+            .getAttribute("data-answer")
+            .split(",")
+            .map((s) => s.trim());
+          const msgBox = q.querySelector(".result-msg");
+          const answerKey = q.querySelector(".answer-key");
+
+          msgBox.style.display = "block";
+          answerKey.style.display = "block";
+
+          let selectedValues = [];
+          const inputs = q.querySelectorAll("input:checked");
+          inputs.forEach((input) => selectedValues.push(input.value));
+
+          const isCorrect =
+            selectedValues.length === correctAnswers.length &&
+            correctAnswers.every((val) => selectedValues.includes(val));
+
+          if (selectedValues.length > 0) {
+            if (isCorrect) {
+              msgBox.textContent = "✅ 정답입니다!";
+              msgBox.className = "result-msg correct";
+              score++;
+            } else {
+              msgBox.textContent =
+                "❌ 오답입니다. (선택한 답: " + selectedValues.join(", ") + ")";
+              msgBox.className = "result-msg incorrect";
+            }
+          } else {
+            msgBox.textContent = "⚠️ 답을 선택하지 않았습니다.";
+            msgBox.className = "result-msg incorrect";
+          }
+        });
+
+        const scoreDisplay = document.getElementById("score-display");
+        scoreDisplay.textContent = `추가 문제 점수: ${score} / ${questions.length} 점`;
+        scoreDisplay.style.display = "block";
+
+        if (score === questions.length) {
+          scoreDisplay.innerHTML +=
+            "<br>🎉 축하합니다! 모든 보너스 문제도 완벽하게 마스터하셨습니다! 🎉";
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CMDB Health Dashboard & Metric Alignment Quiz</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f7f6;
+        color: #333;
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+      }
+      .quiz-container {
+        background: white;
+        width: 100%;
+        max-width: 900px;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        text-align: center;
+        color: #005f56;
+        margin-bottom: 5px;
+      }
+      .progress {
+        text-align: center;
+        color: #666;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+      .question-title {
+        font-size: 1.2em;
+        font-weight: 600;
+        margin-bottom: 20px;
+        line-height: 1.4;
+      }
+      /* 객관식 스타일 */
+      .options-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      .option-label {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .option-label:hover {
+        background: #f0f8f5;
+      }
+      .option-label input {
+        margin-right: 15px;
+        transform: scale(1.2);
+      }
+      /* 드래그 앤 드롭 스타일 */
+      .source-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 15px;
+        background: #eef2f5;
+        border-radius: 8px;
+        min-height: 60px;
+        margin-bottom: 20px;
+        border: 2px dashed #b0bec5;
+      }
+      .draggable {
+        padding: 10px 15px;
+        background: white;
+        border: 2px solid #ccc;
+        border-radius: 6px;
+        cursor: grab;
+        font-weight: 500;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: border-color 0.3s;
+      }
+      .draggable:active {
+        cursor: grabbing;
+      }
+      .dropzones-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+      .dropzone {
+        flex: 1;
+        min-width: 250px;
+        background: #fafafa;
+        border: 2px dashed #999;
+        border-radius: 8px;
+        padding: 15px;
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        transition:
+          background 0.2s,
+          border-color 0.2s;
+      }
+      .dropzone h3 {
+        margin: 0 0 10px 0;
+        font-size: 1.1em;
+        color: #444;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 5px;
+      }
+      .dropzone.dragover {
+        background: #e8f5e9;
+        border-color: #2e7d32;
+      }
+      /* 버튼 및 결과 영역 */
+      .controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        border-top: 1px solid #eee;
+        padding-top: 20px;
+      }
+      .btn {
+        padding: 12px 25px;
+        font-size: 1em;
+        color: white;
+        background-color: #00897b;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.3s;
+      }
+      .btn:hover {
+        background-color: #00695c;
+      }
+      .btn:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+      .result-box {
+        font-size: 1.1em;
+        font-weight: bold;
+        flex-grow: 1;
+        margin-left: 20px;
+      }
+      .correct-text {
+        color: #2e7d32;
+      }
+      .wrong-text {
+        color: #c62828;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="quiz-container">
+      <h1>CMDB Mastery Quiz</h1>
+      <div class="progress" id="progressText">Question 1 of N</div>
+
+      <div id="questionArea">
+        <!-- 문제 내용이 JS에 의해 동적으로 삽입됩니다. -->
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="checkBtn" onclick="checkAnswer()">
+          정답 확인
+        </button>
+        <div class="result-box" id="resultBox"></div>
+        <button class="btn" id="nextBtn" onclick="nextQuestion()" disabled>
+          다음 문제 ❯
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const questions = [
+        {
+          type: "multiple_choice",
+          question:
+            "Implementing and maintaining a CMDB can be challenging. What are some reasons organizations fail to complete a CMDB implementation or realize business value? (Choose 3)",
+          options: [
+            "Ill-defined relationships among configuration items",
+            "Too many non-IT configuration items",
+            "Inconsistent data quality",
+            "Vast amounts of data brought into the CMDB that is not being used",
+          ],
+          correctIndexes: [0, 2, 3],
+          explanation:
+            "올바르지 않은 관계 정의, 일관성 없는 데이터 품질, 사용되지 않는 방대한 데이터가 주요 실패 원인입니다.",
+        },
+        {
+          type: "drag_drop",
+          question:
+            "Drag the top cards to the lower tiles that most closely matches (Discoverable vs Non-Discoverable).",
+          draggables: [
+            { id: "d1", text: "IP Address", answer: "Discoverable Attribute" },
+            {
+              id: "d2",
+              text: "Change Group",
+              answer: "Non-Discoverable Attribute",
+            },
+            {
+              id: "d3",
+              text: "Operating System",
+              answer: "Discoverable Attribute",
+            },
+            {
+              id: "d4",
+              text: "Support Group",
+              answer: "Non-Discoverable Attribute",
+            },
+            {
+              id: "d5",
+              text: "Server Manufacturer",
+              answer: "Discoverable Attribute",
+            },
+            { id: "d6", text: "Device Name", answer: "Discoverable Attribute" },
+            {
+              id: "d7",
+              text: "Serial Number",
+              answer: "Discoverable Attribute",
+            },
+            {
+              id: "d8",
+              text: "Approval Group",
+              answer: "Non-Discoverable Attribute",
+            },
+            {
+              id: "d9",
+              text: "Managed By Group",
+              answer: "Non-Discoverable Attribute",
+            },
+          ],
+          categories: ["Discoverable Attribute", "Non-Discoverable Attribute"],
+          explanation:
+            "IP, OS, 제조사, 디바이스 이름, 일련번호 등 시스템에서 자동으로 가져올 수 있는 값들은 Discoverable이며, 담당 그룹(Change/Support), 위치(Location) 등 사람이 지정해야 하는 정보는 Non-Discoverable 속성입니다.",
+        },
+        {
+          type: "multiple_choice",
+          question:
+            "To operationalize and maintain the health of the CMDB, ServiceNow has detailed which of the following pillars to success? (Choose 3)",
+          options: ["Ingest", "Compliance", "Govern", "Insight", "Design"],
+          correctIndexes: [0, 2, 3],
+          explanation:
+            "성공을 위한 CMDB 3대 기둥은 Ingest(수집), Govern(관리), Insight(통찰) 입니다.",
+        },
+        {
+          type: "drag_drop",
+          question:
+            "Match each metric with its appropriate CMDB Health Dashboard KPI where it is being calculated and used.",
+          draggables: [
+            { id: "d6", text: "Staleness", answer: "Correctness" },
+            { id: "d7", text: "Audits", answer: "Compliance" },
+            { id: "d8", text: "Recommended", answer: "Completeness" },
+            { id: "d9", text: "Required", answer: "Completeness" },
+            { id: "d10", text: "Orphan", answer: "Correctness" },
+            { id: "d11", text: "Duplicate", answer: "Correctness" },
+          ],
+          categories: ["Correctness", "Compliance", "Completeness"],
+          explanation:
+            "Correctness(정확성)에는 Staleness, Orphan, Duplicate가 포함되며, Compliance(규정 준수)에는 Audit, Completeness(완전성)에는 Required와 Recommended 메트릭이 각각 속합니다.",
+        },
+        {
+          type: "multiple_choice",
+          question:
+            "Which of the following are true with respect to the Multisource CMDB? (Choose 2)",
+          options: [
+            "Is active by default on base systems",
+            "Activate the Multisource CMDB by setting the property, glide.identification_engine.multisource_enabled, to true and installing the ITOM Discovery License plugin",
+            "De-activate the Multisource CMDB by installing the CMDB CI Class Models plugin",
+            "Must be activated on base systems",
+          ],
+          correctIndexes: [1, 3],
+          explanation:
+            "Multisource CMDB는 수동 활성화가 필요하며, 특정 속성값 설정과 ITOM Discovery 라이선스가 필수입니다.",
+        },
+        {
+          type: "drag_drop",
+          question:
+            "Drag each top tile to the most appropriate category below. (Reclassification behavior)",
+          draggables: [
+            {
+              id: "rc1",
+              text: "CI moved from Linux Server to Windows Server class",
+              answer: "Switch",
+            },
+            {
+              id: "rc2",
+              text: "CI moved from Linux Server to Server class",
+              answer: "Downgrade",
+            },
+            {
+              id: "rc3",
+              text: "CI moved from Hardware to Printer class",
+              answer: "Upgrade",
+            },
+            { id: "rc4", text: "No data loss can occur", answer: "Upgrade" },
+            { id: "rc5", text: "glide.class.switch.enabled", answer: "Switch" },
+            {
+              id: "rc6",
+              text: "CI moved from Windows Server to Server class",
+              answer: "Downgrade",
+            },
+            {
+              id: "rc7",
+              text: "glide.class.upgrade.enabled",
+              answer: "Upgrade",
+            },
+            {
+              id: "rc8",
+              text: "CI moved from Hardware to Windows Server class",
+              answer: "Upgrade",
+            },
+            {
+              id: "rc9",
+              text: "CI moved from IP Router to IP Switch class",
+              answer: "Switch",
+            },
+            {
+              id: "rc10",
+              text: "glide.class.downgrade.enabled",
+              answer: "Downgrade",
+            },
+            {
+              id: "rc11",
+              text: "CI moved from CIM Server to Storage Server class",
+              answer: "Switch",
+            },
+          ],
+          categories: ["Upgrade", "Downgrade", "Switch"],
+          explanation:
+            "하위(자식) 클래스로의 이동은 Upgrade(데이터 손실 없음), 상위(부모) 클래스로의 이동은 Downgrade(데이터 손실 발생 가능), 형제 노드나 다른 분기로의 이동은 Switch입니다. 각 속성 제어는 glide.class.[유형].enabled 속성으로 관리됩니다.",
+        },
+        {
+          type: "multiple_choice",
+          question:
+            "Which of the following types of data is collected after implementing ServiceNow Discovery? (Select three)",
+          options: [
+            "Operating System",
+            "Support Group",
+            "RAM",
+            "MAC Address",
+            "Managed by Group",
+          ],
+          correctIndexes: [0, 2, 3],
+          explanation:
+            "OS, RAM, MAC 주소는 Discovery를 통해 시스템에서 직접 수집 가능한 정보입니다.",
+        },
+        {
+          type: "drag_drop",
+          question:
+            "Match the Identification Rule strategy to whether it is a Good or Poor rule.",
+          draggables: [
+            {
+              id: "idr1",
+              text: "Using Running process Command to identify an application",
+              answer: "Good Identification Rule",
+            },
+            {
+              id: "idr2",
+              text: "Using Installation Directory Name to identify an application",
+              answer: "Poor Identification Rule",
+            },
+            {
+              id: "idr3",
+              text: "Using MAC/Name pair to identify a server",
+              answer: "Good Identification Rule",
+            },
+            {
+              id: "idr4",
+              text: "Using Configuration File Path to identify an application",
+              answer: "Good Identification Rule",
+            },
+            {
+              id: "idr5",
+              text: "Using Installation Directory Path to identify an application",
+              answer: "Good Identification Rule",
+            },
+            {
+              id: "idr6",
+              text: "Using Name to identify an application",
+              answer: "Poor Identification Rule",
+            },
+            {
+              id: "idr7",
+              text: "Using IP address to identify a server",
+              answer: "Poor Identification Rule",
+            },
+            {
+              id: "idr8",
+              text: "Using Version to identify an application",
+              answer: "Poor Identification Rule",
+            },
+            {
+              id: "idr9",
+              text: "Using Serial Number to identify a server",
+              answer: "Good Identification Rule",
+            },
+          ],
+          categories: ["Good Identification Rule", "Poor Identification Rule"],
+          explanation:
+            "전체 경로(Path), 실행 중인 명령어(Command), MAC/Name 쌍 같이 고유성이 보장되는 것은 좋은 식별 규칙입니다. 반면 언제든 바뀔 수 있는 IP 주소나, 고유성이 떨어지는 단순한 디렉토리 이름(Directory Name), 애플리케이션 이름은 나쁜 식별 규칙입니다.",
+        },
+        {
+          type: "multiple_choice",
+          question:
+            "Which ServiceNow management tool would you use to find data centers not connected to any configuration item?",
+          options: [
+            "CI Class Manager",
+            "CMDB Health Dashboard",
+            "Data Manager",
+            "CMDB Query Builder",
+          ],
+          correctIndexes: [3],
+          explanation:
+            "고립된(Orphan) CI를 찾거나 관계가 없는 항목을 필터링할 때는 CMDB Query Builder가 가장 강력합니다.",
+        },
+        {
+          type: "multiple_choice",
+          question:
+            "Each stakeholder will have different goals and outcomes they want to realize from a CMDB implementation. What is the stakeholder's role in implementing and maintaining the CMDB?",
+          options: [
+            "Import CI data, such as name, source, and relationships",
+            "Determine specific CI information required to support capabilities and build organizational buy-in",
+            "Create a go-forward strategy for configuration management responsibilities",
+            "Identify necessary reports showing CI health for related departments",
+          ],
+          correctIndexes: [1],
+          explanation:
+            "이해관계자는 비즈니스 역량에 필요한 CI 정보를 정의하고 조직 내 지원(Buy-in)을 확보하는 전략적 역할을 합니다.",
+        },
+        {
+          type: "drag_drop",
+          question: "Match the term with the correct description.",
+          draggables: [
+            {
+              id: "d_t1",
+              text: "Information that further describes a CI such as a name, serial number, or operating system",
+              answer: "Attributes",
+            },
+            {
+              id: "d_t2",
+              text: "A table that contains a specific type or group of CIs that share common attributes",
+              answer: "Class",
+            },
+            {
+              id: "d_t3",
+              text: "A database used to store configuration records throughout their lifecycle",
+              answer: "CMDB",
+            },
+            {
+              id: "d_t4",
+              text: "Physical and logical components that need to be managed to deliver a product or service",
+              answer: "Configuration Item (CI)",
+            },
+            {
+              id: "d_t5",
+              text: "Represents a standard and shared set of service related definitions",
+              answer: "CSDM",
+            },
+            {
+              id: "d_t6",
+              text: "Users, groups, locations",
+              answer: "Foundational Data",
+            },
+          ],
+          categories: [
+            "Attributes",
+            "Class",
+            "CMDB",
+            "Configuration Item (CI)",
+            "CSDM",
+            "Foundational Data",
+          ],
+          explanation:
+            "CMDB의 핵심 구성 요소인 속성, 클래스, CI, CSDM 등의 정의를 매칭한 것입니다.",
+        },
+        {
+          type: "drag_drop",
+          question:
+            "Drag the top card to the lower tile that best corresponds to the CMDB pillar where the management tool is most commonly used.",
+          draggables: [
+            { id: "p1", text: "ServiceNow Discovery", answer: "Ingest" },
+            { id: "p2", text: "Service Graph Connectors", answer: "Ingest" },
+            { id: "p3", text: "IntegrationHub ETL", answer: "Ingest" },
+            { id: "p4", text: "De-duplication Templates", answer: "Govern" },
+            {
+              id: "p5",
+              text: "CMDB and CSDM Data Foundations Dashboard",
+              answer: "Govern",
+            },
+            { id: "p6", text: "CMDB Query Builder", answer: "Insight" },
+            { id: "p7", text: "Intelligent Search", answer: "Insight" },
+            { id: "p8", text: "Duplicate CI Remediator", answer: "Govern" },
+            { id: "p9", text: "Import Sets", answer: "Ingest" },
+            { id: "p10", text: "Service Mapping", answer: "Ingest" },
+            { id: "p11", text: "Agent Client Collector", answer: "Ingest" },
+            { id: "p12", text: "Unified Map", answer: "Insight" },
+            { id: "p13", text: "Data Manager", answer: "Govern" },
+            { id: "p14", text: "CMDB Health Dashboard", answer: "Govern" },
+          ],
+          categories: ["Ingest", "Govern", "Insight"],
+          explanation:
+            "수집 도구(Discovery, Connectors 등)는 Ingest, 데이터 품질 관리(Duplicate CI Remediator, Templates 등)는 Govern, 데이터 활용 및 검색(Query Builder, Search 등)은 Insight 필라에 속합니다.",
+        },
+        {
+          type: "multiple_choice",
+          question:
+            "The Server class is extended from the Computer class. Which is the parent class between the two classes?",
+          options: ["Computer", "Server", "It depends", "Both"],
+          correctIndexes: [0],
+          explanation:
+            "Computer가 상위(Parent) 클래스이며, Server는 이를 확장한 자식(Child) 클래스입니다.",
+        },
+        {
+          type: "multiple_choice",
+          question:
+            "The Server class uses a dynamic reconciliation rule that selects the largest value for the RAM field, while the Windows Server class uses a rule that selects the most reported value. Based on the RAM values available from different discovery sources in the Multisource CMDB for a given Windows Server, which RAM value will ultimately be written to the CMDB for that Windows Server record?\n\n• Tivoli RAM: 4096 | ServiceNow RAM: 4096 | LANDesk RAM: 2048 | Altiris RAM: 6020",
+          options: ["6020", "2048", "4096", "1024"],
+          correctIndexes: [2],
+          explanation:
+            "4096 is the correct answer since it is the most reported value for the Windows Server class as configured in the dynamic reconciliation rule.",
+        },
+        {
+          type: "multiple_choice",
+          question:
+            "Which of the following can be configured to prevent inserts into the CMDB from an unwanted data source?",
+          options: [
+            "Identification Rule",
+            "Reconciliation Rule",
+            "Dynamic Reconciliation Rule",
+            "Data Refresh Rule",
+            "IRE Data Source Rule",
+          ],
+          correctIndexes: [4],
+          explanation:
+            "IRE Data Source Rule을 사용하여 승인되지 않은 소스가 CI를 생성(insert)하는 것을 차단할 수 있습니다.",
+        },
+        {
+          type: "multiple_choice",
+          question:
+            "Which of the following is a lightweight agent-based solution designed to perform discovery and real-time monitoring?",
+          options: [
+            "Agent Client Collector",
+            "Service Graph Connectors",
+            "ServiceNow Discovery",
+            "IntegrationHub ETL",
+          ],
+          correctIndexes: [0],
+          explanation:
+            "에이전트 기반의 실시간 모니터링 및 탐지 솔루션은 ACC(Agent Client Collector)입니다.",
+        },
+        {
+          type: "multiple_choice",
+          question:
+            "When using import sets and transform maps... add which type of script to ensure data passes through IRE?",
+          options: ["onBefore", "onStart", "onComplete", "onAfter"],
+          correctIndexes: [0],
+          explanation:
+            "CMDB 데이터 무결성을 위해 Transform map의 onBefore 스크립트에서 IRE를 호출하는 것이 권장됩니다.",
+        },
+        {
+          type: "multiple_choice",
+          question:
+            "If a CMDB administrator wants to turn on task creation for each CI that fails the health test for recommended fields, where is this configured?",
+          options: [
+            "CI Class Manager",
+            "CMDB Health Dashboard",
+            "Health Metrics",
+            "System Properties",
+          ],
+          correctIndexes: [2],
+          explanation:
+            "Task 생성 설정은 Configuration > Health Preferences > Health Metrics 메뉴에서 클래스별로 구성합니다.",
+        },
+        {
+          type: "multiple_choice",
+          question:
+            "In reviewing the Duplicate metric for the Server class, it displays Healthy CIs/Evaluated 700/800. What is true?",
+          options: [
+            "700 server records are duplicates in the CMDB",
+            "800 server records are duplicates in the CMDB",
+            "100 server records are duplicates in the CMDB",
+            "700 Linux and 800 Windows server records are duplicates in the CMDB",
+          ],
+          correctIndexes: [2],
+          explanation:
+            "전체 800개 중 700개가 건강하므로, 나머지 100개가 중복된(Duplicate) 것으로 판단된 결과입니다.",
+        },
+        {
+          type: "multiple_choice",
+          question:
+            "What is the effective duration for the default Staleness rule in a base system?",
+          options: ["24 hours", "7 days", "30 days", "60 days"],
+          correctIndexes: [3],
+          explanation:
+            "ServiceNow 기본 시스템에서 Staleness(오래됨)의 기준 기간은 60일입니다.",
+        },
+        {
+          type: "multiple_choice",
+          question:
+            "The Staleness metric calculation is based on which of the following fields?",
+          options: [
+            "Most recent discovery <last_discovered>",
+            "Created <sys_created_on>",
+            "Updated <sys_updated_on>",
+            "First Discovered <first_discovered>",
+          ],
+          correctIndexes: [2],
+          explanation:
+            "Staleness는 데이터의 최신성을 보장하기 위해 sys_updated_on 필드를 기준으로 계산합니다.",
+        },
+        {
+          type: "multiple_choice",
+          question:
+            "Which of the following audit types are used in the calculation for the Compliance Scorecard results? (Choose two)",
+          options: [
+            "Compliance",
+            "Compliance Architecture",
+            "Desired State",
+            "Scripted Audit",
+          ],
+          correctIndexes: [2, 3],
+          explanation:
+            "Compliance 스코어카드는 Desired State Audit와 Scripted Audit의 결과를 합산하여 산출됩니다.",
+        },
+        {
+          type: "multiple_choice",
+          question:
+            "Which of the following are valid Data Manager policy types? (Choose five)",
+          options: [
+            "Retirement",
+            "Certification",
+            "Attestation",
+            "Deletion",
+            "Archiving",
+            "De-duplication",
+            "Reclassification",
+          ],
+          correctIndexes: [0, 1, 2, 3, 4],
+          explanation:
+            "Data Manager 정책은 Retirement, Certification, Attestation, Deletion, Archiving을 지원합니다.",
+        },
+        {
+          type: "multiple_choice",
+          question:
+            "During ServiceNow Discovery, if a new CI is discovered and duplicates are found in the CMDB, which of the following is true?",
+          options: [
+            "The oldest CI, based on Creation Date is updated",
+            "The oldest CI, based on Last Updated is updated",
+            "The newest CI, based on Creation Date is updated",
+            "The newest CI, based on Last Updated is updated",
+          ],
+          correctIndexes: [0],
+          explanation:
+            "중복 CI 발견 시, 데이터 보존 정책에 따라 가장 먼저 생성된(Oldest) 레코드가 마스터로서 업데이트됩니다.",
+        },
+        {
+          type: "multiple_choice",
+          question:
+            "CI Attestation is the confirmation of which of the following?",
+          options: [
+            "CI exists",
+            "CI does not exist",
+            "CI has dependent CIs",
+            "CI does not have dependent CIs",
+          ],
+          correctIndexes: [0],
+          explanation:
+            "Attestation(증명)은 데이터 소유자가 해당 자산이 실제로 현장에 존재함을 확인해주는 절차입니다.",
+        },
+        {
+          type: "multiple_choice",
+          question:
+            "The Unified Map combines many of the features from which of the following maps? (Choose two)",
+          options: [
+            "Application Service",
+            "Dependency View",
+            "Geolocation",
+            "Transform",
+            "Dynamic",
+          ],
+          correctIndexes: [0, 1],
+          explanation:
+            "Unified Map은 서비스 구조를 보여주는 Application Service 맵과 인프라 관계를 보여주는 Dependency View를 하나로 합친 것입니다.",
+        },
+        {
+          type: "multiple_choice",
+          question: "Intelligent Search uses which of the following languages?",
+          options: ["NLQ", "SQL", "MySQL", "JSON"],
+          correctIndexes: [0],
+          explanation:
+            "Intelligent Search는 사용자의 자연어 질문을 이해하는 NLQ(Natural Language Query)를 기반으로 작동합니다.",
+        },
+        {
+          type: "multiple_choice",
+          question:
+            "To assist incident and change routing, which CI fields map to the assignment group fields? (Choose two)",
+          options: [
+            "Support Group",
+            "Change Group",
+            "Managed By Group",
+            "Assignment Group",
+            "Operational Group",
+          ],
+          correctIndexes: [0, 1],
+          explanation:
+            "CI의 Support Group은 인시던트 처리에, Change Group은 변경 요청 승인/처리에 사용됩니다.",
+        },
+      ];
+
+      let currentIndex = 0;
+
+      function renderQuestion() {
+        const q = questions[currentIndex];
+        const area = document.getElementById("questionArea");
+        document.getElementById("progressText").innerText =
+          `Question ${currentIndex + 1} of ${questions.length}`;
+        document.getElementById("resultBox").innerHTML = "";
+        document.getElementById("nextBtn").disabled = true;
+        document.getElementById("checkBtn").disabled = false;
+
+        let html = `<div class="question-title">${q.question}</div>`;
+
+        if (q.type === "multiple_choice") {
+          html += `<div class="options-container">`;
+          q.options.forEach((opt, idx) => {
+            // 체크박스 타입으로 렌더링
+            html += `
+          <label class="option-label">
+            <input type="checkbox" value="${idx}" class="mc-option">
+            ${opt}
+          </label>
+        `;
+          });
+          html += `</div>`;
+          area.innerHTML = html;
+        } else if (q.type === "drag_drop") {
+          html += `<div class="source-container" id="source-container" ondrop="drop(event)" ondragover="allowDrop(event)">`;
+          q.draggables.forEach((d) => {
+            html += `<div class="draggable" id="${d.id}" data-answer="${d.answer}" draggable="true" ondragstart="drag(event)">${d.text}</div>`;
+          });
+          html += `</div><div class="dropzones-container">`;
+          q.categories.forEach((cat) => {
+            html += `
+          <div class="dropzone" id="${cat}" data-category="${cat}" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
+            <h3>${cat}</h3>
+          </div>
+        `;
+          });
+          html += `</div>`;
+          area.innerHTML = html;
+        }
+      }
+
+      // 드래그 앤 드롭 기본 로직
+      function allowDrop(ev) {
+        ev.preventDefault();
+        if (ev.currentTarget.classList.contains("dropzone")) {
+          ev.currentTarget.classList.add("dragover");
+        }
+      }
+      function dragLeave(ev) {
+        ev.currentTarget.classList.remove("dragover");
+      }
+      function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+      }
+      function drop(ev) {
+        ev.preventDefault();
+        ev.currentTarget.classList.remove("dragover");
+        var data = ev.dataTransfer.getData("text");
+        const el = document.getElementById(data);
+        if (el) {
+          ev.currentTarget.appendChild(el);
+        }
+      }
+
+      // 정답 확인 로직
+      function checkAnswer() {
+        const q = questions[currentIndex];
+        const resultBox = document.getElementById("resultBox");
+        let isCorrect = false;
+
+        if (q.type === "multiple_choice") {
+          const checkboxes = document.querySelectorAll(".mc-option");
+          let selected = [];
+          checkboxes.forEach((cb) => {
+            if (cb.checked) selected.push(parseInt(cb.value));
+          });
+
+          // 배열 내용 비교
+          selected.sort();
+          const correct = [...q.correctIndexes].sort();
+          if (
+            selected.length === correct.length &&
+            selected.every((val, index) => val === correct[index])
+          ) {
+            isCorrect = true;
+          }
+        } else if (q.type === "drag_drop") {
+          const items = document.querySelectorAll(".draggable");
+          let allCorrect = true;
+          let allPlaced = true;
+
+          items.forEach((item) => {
+            const correctAnswer = item.getAttribute("data-answer");
+            const currentParentId = item.parentElement.id;
+
+            if (currentParentId === "source-container") {
+              allCorrect = false;
+              allPlaced = false;
+              item.style.borderColor = "#ccc";
+            } else if (correctAnswer !== currentParentId) {
+              allCorrect = false;
+              item.style.borderColor = "#c62828"; // Red
+            } else {
+              item.style.borderColor = "#2e7d32"; // Green
+            }
+          });
+
+          if (!allPlaced) {
+            resultBox.innerHTML = `<span class='wrong-text'>아직 배치하지 않은 항목이 있습니다.</span>`;
+            return; // 아직 전부 배치 안했으면 틀림 처리 완료 안함
+          }
+          isCorrect = allCorrect;
+        }
+
+        if (isCorrect) {
+          resultBox.innerHTML = `<span class='correct-text'>정답입니다! 🎉<br><span style="font-size:0.8em; color:#555;">${q.explanation}</span></span>`;
+          document.getElementById("checkBtn").disabled = true;
+          document.getElementById("nextBtn").disabled = false;
+        } else {
+          resultBox.innerHTML = `<span class='wrong-text'>틀렸습니다. 다시 확인해 보세요.</span>`;
+        }
+      }
+
+      function nextQuestion() {
+        if (currentIndex < questions.length - 1) {
+          currentIndex++;
+          renderQuestion();
+        } else {
+          document.getElementById("questionArea").innerHTML =
+            `<div style="text-align:center; padding: 40px;"><h2>수고하셨습니다! 모든 퀴즈를 완료했습니다. 🚀</h2></div>`;
+          document.getElementById("progressText").innerText = "Quiz Completed";
+          document.getElementById("checkBtn").style.display = "none";
+          document.getElementById("nextBtn").style.display = "none";
+          document.getElementById("resultBox").innerHTML = "";
+        }
+      }
+
+      // 초기 렌더링
+      renderQuestion();
+    </script>
+  </body>
+</html>

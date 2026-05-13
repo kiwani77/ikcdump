@@ -1,0 +1,206 @@
+import os
+
+# HTML 내용 정의
+html_content = """
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ServiceNow CSDM 성숙도 모델 가이드</title>
+    <style>
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        h1 {
+            color: #1e3a8a;
+            text-align: center;
+            border-bottom: 3px solid #1e3a8a;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        .intro {
+            background: #eff6ff;
+            padding: 15px;
+            border-left: 5px solid #3b82f6;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+        .stage {
+            margin-bottom: 40px;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            transition: transform 0.2s;
+        }
+        .stage:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+        }
+        .crawl { border-left: 8px solid #94a3b8; } /* Grey */
+        .walk { border-left: 8px solid #10b981; }  /* Green */
+        .run { border-left: 8px solid #f59e0b; }   /* Orange */
+        .fly { border-left: 8px solid #8b5cf6; }   /* Purple */
+
+        .stage-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .stage-title span {
+            font-size: 0.8em;
+            margin-left: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #fff;
+        }
+        .crawl .stage-title span { background: #94a3b8; }
+        .walk .stage-title span { background: #10b981; }
+        .run .stage-title span { background: #f59e0b; }
+        .fly .stage-title span { background: #8b5cf6; }
+
+        ul { padding-left: 20px; }
+        li { margin-bottom: 8px; }
+        .keyword { font-weight: bold; color: #1e40af; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+        }
+        th { background-color: #f9fafb; color: #1f2937; }
+
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #6b7280;
+        }
+        .exam-tip {
+            background: #fff7ed;
+            border: 1px dashed #ea580c;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌙 CSDM 성숙도 모델 (Crawl to Fly)</h1>
+        
+        <div class="intro">
+            CSDM 성숙도는 데이터의 단순 적재가 아니라, IT 서비스가 비즈니스 가치로 진화하는 과정을 의미합니다.
+        </div>
+
+        <div class="stage crawl">
+            <div class="stage-title">1. Crawl (기어가기) <span>기초 가시성</span></div>
+            <p><strong>도메인:</strong> Manage Technical Services (하단부)</p>
+            <ul>
+                <li><span class="keyword">핵심:</span> 우리가 무엇을 가졌는가? (Inventory)</li>
+                <li><span class="keyword">활동:</span> 인프라 CI 등록 + <span class="keyword">Application Service</span> 생성.</li>
+                <li><span class="keyword">연결:</span> 인프라 CI ↔ Application Service.</li>
+            </ul>
+            <div class="exam-tip">💡 <strong>시험 팁:</strong> "Discoverable(발견 가능한)" 혹은 "Application Service 매핑"이 나오면 Crawl 단계입니다.</div>
+        </div>
+
+        <div class="stage walk">
+            <div class="stage-title">2. Walk (걷기) <span>운영 체계화</span></div>
+            <p><strong>도메인:</strong> Manage Technical Services (상단부)</p>
+            <ul>
+                <li><span class="keyword">핵심:</span> 누가 관리하는가? (Ownership)</li>
+                <li><span class="keyword">활동:</span> <span class="keyword">Technical Service</span> & Technical Service Offering 정의.</li>
+                <li><span class="keyword">연결:</span> 운영 그룹(Support Group) 정보를 CI에 동기화.</li>
+            </ul>
+            <div class="exam-tip">💡 <strong>시험 팁:</strong> "Support Group", "Managed by Group", "Technical Service" 단어는 Walk의 상징입니다.</div>
+        </div>
+
+        <div class="stage run">
+            <div class="stage-title">3. Run (뛰기) <span>비즈니스 중심</span></div>
+            <p><strong>도메인:</strong> Sell / Consume</p>
+            <ul>
+                <li><span class="keyword">핵심:</span> 고객에게 어떤 가치가 있는가? (Business Context)</li>
+                <li><span class="keyword">활동:</span> <span class="keyword">Business Service</span> & Offering 정의. SLA 설정.</li>
+                <li><span class="keyword">연결:</span> 서비스 포트폴리오 ↔ 비즈니스 서비스.</li>
+            </ul>
+            <div class="exam-tip">💡 <strong>시험 팁:</strong> "Business Criticality(중요도)", "SLA", "Service Portfolio"는 Run 단계에서 등장합니다.</div>
+        </div>
+
+        <div class="stage fly">
+            <div class="stage-title">4. Fly (날기) <span>전략적 최적화</span></div>
+            <p><strong>도메인:</strong> Design / Foundation (심화)</p>
+            <ul>
+                <li><span class="keyword">핵심:</span> IT가 비즈니스 전략과 일치하는가? (Alignment)</li>
+                <li><span class="keyword">활동:</span> Information Object, Business Capability 연결.</li>
+                <li><span class="keyword">연결:</span> 비즈니스 역량 ↔ IT 서비스 ↔ 데이터 흐름.</li>
+            </ul>
+            <div class="exam-tip">💡 <strong>시험 팁:</strong> "Information Object"나 "Business Capability" 매핑은 가장 고도화된 Fly 단계입니다.</div>
+        </div>
+
+        <h2>📊 단계별 요약 요약표</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>단계</th>
+                    <th>핵심 단어</th>
+                    <th>연결 대상</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Crawl</td>
+                    <td>인벤토리</td>
+                    <td>CI ↔ App Service</td>
+                </tr>
+                <tr>
+                    <td>Walk</td>
+                    <td>기술 운영</td>
+                    <td>기술팀 ↔ CI</td>
+                </tr>
+                <tr>
+                    <td>Run</td>
+                    <td>비즈니스 약속</td>
+                    <td>고객 ↔ 서비스</td>
+                </tr>
+                <tr>
+                    <td>Fly</td>
+                    <td>가치 최적화</td>
+                    <td>데이터 ↔ 역량</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="footer">
+            수고하셨습니다. 이 내용을 숙지하시면 7%의 부족함을 채우고 반드시 합격하실 수 있습니다! 🚀
+        </div>
+    </div>
+</body>
+</html>
+"""
+
+# 파일 저장
+file_path = "ServiceNow_CSDM_Guide.html"
+with open(file_path, "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+print(f"파일이 성공적으로 생성되었습니다: {os.path.abspath(file_path)}")
