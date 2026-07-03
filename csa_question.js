@@ -1,4 +1,4 @@
-QUESTIONS = [
+const QUESTIONS = [
   {
     "id": 1,
     "title": "What is the function of user impersonation?",
